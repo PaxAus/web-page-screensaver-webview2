@@ -137,7 +137,7 @@ namespace Web_Page_Screensaver
 
         private void HandleUserActivity()
         {
-            if (StartTime.AddSeconds(1) > DateTime.Now) return;
+            if (StartTime.AddMilliseconds(20) > DateTime.Now) return;
 
             if (prefsManager.CloseOnActivity)
             {
@@ -147,6 +147,7 @@ namespace Web_Page_Screensaver
             {
                 closeButton.Visible = true;
                 Cursor.Show();
+                webView2.Enabled = true;
             }
         }
 
@@ -164,7 +165,7 @@ namespace Web_Page_Screensaver
         private const int WM_MBUTTONDBLCLK = 0x209;
         private const int WM_KEYDOWN = 0x100;
         private const int WM_KEYUP = 0x101;
-
+        
         // screensavers and especially multi-window apps can get spurrious WM_MOUSEMOVE events
         // that don't actually involve any movement (cursor chnages and some mouse driver software
         // can generate them, for example) - so we record the actual mouse position and compare against it for actual movement.
@@ -174,10 +175,6 @@ namespace Web_Page_Screensaver
 
         public bool PreFilterMessage(ref Message m)
         {
-            if ((m.Msg == WM_MOUSEMOVE) && (this.lastMousePos == null))
-            {
-                this.lastMousePos = Cursor.Position;
-            }
 
             if (((m.Msg == WM_MOUSEMOVE) && (Cursor.Position != this.lastMousePos))
                 || (m.Msg > WM_MOUSEMOVE && m.Msg <= WM_MBUTTONDBLCLK) || m.Msg == WM_KEYDOWN || m.Msg == WM_KEYUP)
@@ -190,6 +187,10 @@ namespace Web_Page_Screensaver
             }
             // Always allow message to continue to the next filter control
             return false;
+        }
+        public GlobalUserEventHandler()
+        {
+            this.lastMousePos = Cursor.Position;
         }
     }
 }
